@@ -1,0 +1,35 @@
+script:
+  activate_alexa_actionable_notification:
+    description: 'Activates an actionable notification on a specific echo device'
+    fields:
+      text:
+        description: 'The text you would like alexa to speak.'
+      event_id:
+        description: 'Correlation ID for event responses'
+      alexa_device: 
+        description: 'Alexa device you want to trigger'
+      response_text_no:
+        description: 'no response'    
+      response_text_yes:
+        description: 'yes response'    
+    sequence:
+      - service: input_text.set_value
+        data_template:
+          entity_id: input_text.alexa_actionable_notification
+          value: '{"text": "{{ text }}", "event": "{{ event_id }}", "response_text_yes": "{{ response_text_yes }}", "response_text_no": "{{ response_text_no }}"}'
+      - service: media_player.play_media
+        data_template:
+          entity_id: "{{ alexa_device }}"
+          media_content_type: skill
+          media_content_id: <<your skill-id>>
+
+  alexa_custom_action_ask_a_question:
+    alias: Alexa - Custom Action - Ask A Question
+    sequence:
+      - service: script.activate_alexa_actionable_notification
+        data_template:
+          text: "Is this a silly question"
+          event_id: 'event_alexa_ask_a_question'
+          alexa_device: 'media_player.bedroom'
+          response_text_no: ' No'
+          response_text_yes: ' Yes'
